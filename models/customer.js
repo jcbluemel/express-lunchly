@@ -56,6 +56,36 @@ class Customer {
     return new Customer(customer);
   }
 
+  /** search customers by name. */
+
+  static async get(name) {
+
+    //TODO: use ILIKE, see if first_name or last_name
+    // split the name on spaces? how do we decide which is the first
+    // or last name.
+    // const names = name.split(" ");
+
+    const results = await db.query(
+          `SELECT id,
+                  first_name AS "firstName",
+                  last_name  AS "lastName",
+           FROM customers
+           WHERE first_name ILIKE '%$1%'
+            OR last_name ILIKE '%$1%'`,
+        [name],
+    );
+
+    const customers = results.rows.map(c => new Customer(c));
+
+    if (!customers) {
+      const err = new Error(`No such customer: ${name}`);
+      err.status = 404;
+      throw err;
+    }
+    return customers;
+  }
+
+
   /** get all reservations for this customer. */
 
   async getReservations() {
