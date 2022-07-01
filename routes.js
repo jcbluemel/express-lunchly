@@ -22,8 +22,8 @@ router.get("/", async function (req, res, next) {
 router.get("/search", async function (req, res, next) {
 
   const name = req.query.search;
-  console.log("NAME IS WHAT", name);
-  return 42;
+  const customers = await Customer.search(name);
+  return res.render("customer_list.html", { customers });
 
 });
 
